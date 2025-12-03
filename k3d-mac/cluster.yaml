@@ -1,0 +1,46 @@
+apiVersion: k3d.io/v1alpha4
+kind: Simple
+metadata:
+  name: edge-dev
+
+servers: 1
+agents: 0
+
+image: rancher/k3s:v1.31.5-k3s1
+
+ports:
+  # Ingress (you already had these)
+  - port: 30080:80
+    nodeFilters:
+      - loadbalancer
+  - port: 30443:443
+    nodeFilters:
+      - loadbalancer
+
+  # ⭐ kube-state-metrics (8080 → host 38080)
+  - port: 38080:8080
+    nodeFilters:
+      - loadbalancer
+
+  # ⭐ node-exporter (9100 → host 39100)
+  - port: 39100:9100
+    nodeFilters:
+      - server:*
+
+registries:
+  create:
+    name: edge-registry
+    host: "0.0.0.0"
+    hostPort: "5000"
+
+options:
+  k3d:
+    wait: true
+  kubeconfig:
+    updateDefaultKubeconfig: true
+    switchCurrentContext: true
+  k3s:
+    extraArgs:
+      - arg: --disable=traefik
+        nodeFilters:
+          - server:*
