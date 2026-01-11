@@ -7,6 +7,8 @@ services:
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - ./prometheus/prometheus.token:/etc/prometheus/prometheus.token:ro
+      - ./prometheus/prometheus-ca.crt:/etc/prometheus/prometheus-ca.crt:ro
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--web.enable-lifecycle"
@@ -14,6 +16,9 @@ services:
       - "9090:9090"
     networks:
       - edge-net
+      - k3d
+    extra_hosts:
+      - "k3d-edge-dev-server-0:172.19.0.4"
 
   grafana:
     image: grafana/grafana:latest
@@ -33,6 +38,11 @@ services:
 
 networks:
   edge-net:
+    driver: bridge
+
+  k3d:
+    external: true
+    name: k3d-edge-dev
 
 volumes:
   grafana-storage:

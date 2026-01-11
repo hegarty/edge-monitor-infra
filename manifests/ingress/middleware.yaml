@@ -1,0 +1,26 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: hello-world-strip
+spec:
+  stripPrefixRegex:
+    regex:
+      - ^/hello-world(/|$)
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: kube-state-strip
+spec:
+  stripPrefix:
+    prefixes:
+      - /kube-state
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: node-exporter-strip
+spec:
+  stripPrefix:
+    prefixes:
+      - /node-exporter
