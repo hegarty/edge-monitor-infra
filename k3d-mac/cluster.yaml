@@ -9,8 +9,7 @@ agents: 0
 image: rancher/k3s:v1.31.5-k3s1
 
 ports:
-  # Ingress (you already had these)
-  - port: 30080:8080
+  - port: 30080:80
     nodeFilters:
       - server:*
 registries:
@@ -24,7 +23,4 @@ options:
     updateDefaultKubeconfig: true
     switchCurrentContext: true
   k3s:
-    extraArgs:
-      - arg: --disable=traefik
-        nodeFilters:
-          - server:*
+    extraArgs: []

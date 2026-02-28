@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gateway-monitor-ingress
+  namespace: gateway-monitor
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: gateway-monitor-gateway-monitor-strip@kubernetescrd
+spec:
+  ingressClassName: traefik
+  rules:
+    - http:
+        paths:
+          - path: /gateway-monitor
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway-monitor
+                port:
+                  number: 9093

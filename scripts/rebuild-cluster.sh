@@ -68,7 +68,17 @@ kubectl apply -f "${INFRA_DIR}/manifests/kube-state-metrics/"
 echo ">> Applying node-exporter"
 kubectl apply -f "${INFRA_DIR}/manifests/node-exporter/"
 
-echo ">> Applying ingress"
+echo ">> Waiting for Traefik deployment to appear"
+for i in $(seq 1 30); do
+    if kubectl get deployment traefik -n kube-system >/dev/null 2>&1; then
+        break
+    fi
+    sleep 2
+done
+echo ">> Waiting for Traefik to be ready"
+kubectl wait --for=condition=Available deployment/traefik -n kube-system --timeout=120s
+
+echo ">> Applying ingress and middleware"
 kubectl apply -f "${INFRA_DIR}/manifests/ingress/"
 
 # -----------------------------------------------

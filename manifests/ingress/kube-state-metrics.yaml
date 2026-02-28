@@ -2,8 +2,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: kube-state-metrics
+  namespace: kube-state-metrics
   annotations:
-    traefik.ingress.kubernetes.io/router.middlewares: default-kube-state-strip@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: kube-state-metrics-kube-state-strip@kubernetescrd
 spec:
   ingressClassName: traefik
   rules:
