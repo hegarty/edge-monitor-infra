@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   prometheus:
     image: prom/prometheus:latest
@@ -29,8 +27,10 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
     volumes:
       - grafana-storage:/var/lib/grafana
-      - ./grafana/datasources:/etc/grafana/provisioning/datasources:ro
-      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      # Mount entire provisioning directory (contains dashboards/ and datasources/)
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      # Mount dashboard JSON files
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
     ports:
       - "3000:3000"
     networks:
