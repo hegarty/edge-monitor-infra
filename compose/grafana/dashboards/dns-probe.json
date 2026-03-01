@@ -11,10 +11,7 @@
       "id": 1,
       "type": "stat",
       "title": "DNS Target Status",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
+      "datasource": "Prometheus",
       "targets": [
         {
           "expr": "dns_probe_up{job=\"dns-probe\"}",
@@ -39,10 +36,7 @@
       "id": 2,
       "type": "stat",
       "title": "DNS Timeouts (1h)",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
+      "datasource": "Prometheus",
       "targets": [
         {
           "expr": "sum(increase(dns_probe_timeouts_total{job=\"dns-probe\"}[1h]))",
@@ -67,10 +61,7 @@
       "id": 3,
       "type": "timeseries",
       "title": "DNS Latency (Seconds)",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
+      "datasource": "Prometheus",
       "targets": [
         {
           "expr": "dns_probe_latency_seconds{job=\"dns-probe\"}",
@@ -100,10 +91,7 @@
       "id": 4,
       "type": "timeseries",
       "title": "DNS Timeouts Total",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
+      "datasource": "Prometheus",
       "targets": [
         {
           "expr": "dns_probe_timeouts_total{job=\"dns-probe\"}",
@@ -129,10 +117,7 @@
       "id": 5,
       "type": "timeseries",
       "title": "CPU Usage (cores)",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
+      "datasource": "Prometheus",
       "targets": [
         {
           "expr": "rate(process_cpu_seconds_total{job=\"dns-probe\"}[1m])",
@@ -145,10 +130,7 @@
       "id": 6,
       "type": "timeseries",
       "title": "Memory Usage",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
+      "datasource": "Prometheus",
       "targets": [
         {
           "expr": "process_resident_memory_bytes{job=\"dns-probe\"}",
@@ -166,10 +148,7 @@
       "id": 7,
       "type": "timeseries",
       "title": "Goroutines",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
+      "datasource": "Prometheus",
       "targets": [
         {
           "expr": "go_goroutines{job=\"dns-probe\"}",
@@ -182,10 +161,7 @@
       "id": 8,
       "type": "timeseries",
       "title": "Metrics Endpoint Request Rate",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
+      "datasource": "Prometheus",
       "targets": [
         {
           "expr": "sum(rate(promhttp_metric_handler_requests_total{job=\"dns-probe\"}[1m])) by (code)",

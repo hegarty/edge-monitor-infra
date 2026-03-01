@@ -12,13 +12,10 @@
       "id": 1,
       "type": "stat",
       "title": "WiFi Quality Score (5m)",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
+      "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "clamp_min(100 - 45 * (1 - min_over_time(gateway_reachable{job=\"gateway-monitor\"}[5m])) - 20 * (1 - min(min_over_time(wifi_probe_up{job=\"wifi-probe\"}[5m]))) - 15 * clamp_max(max(max_over_time(network_jitter_ms{job=\"jitter-probe\"}[5m])) / 30, 1) - 10 * clamp_max(max(max_over_time(latency_p99{job=\"jitter-probe\"}[5m])) / 250, 1) - 10 * clamp_max(sum(increase(packet_loss_burst_total{job=\"jitter-probe\"}[5m])), 1), 0)",
+          "expr": "100 - 45 * (1 - scalar(max(min_over_time(gateway_reachable{job=\"gateway-monitor\"}[5m])) or vector(0))) - 20 * (1 - scalar(min(min_over_time(wifi_probe_up{job=\"wifi-probe\"}[5m])) or vector(0))) - 0.5 * scalar(max(max_over_time(network_jitter_ms{job=\"jitter-probe\"}[5m])) or vector(0)) - 0.04 * scalar(max(max_over_time(latency_p99{job=\"jitter-probe\"}[5m])) or vector(0)) - 10 * scalar(sum(increase(packet_loss_burst_total{job=\"jitter-probe\"}[5m])) or vector(0))",
           "refId": "A"
         }
       ],
@@ -50,10 +47,7 @@
       "id": 2,
       "type": "stat",
       "title": "Gateway Reachable (5m min)",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
+      "datasource": "Prometheus",
       "targets": [
         {
           "expr": "min_over_time(gateway_reachable{job=\"gateway-monitor\"}[5m])",
@@ -77,10 +71,7 @@
       "id": 3,
       "type": "stat",
       "title": "WiFi Probe Up (5m min)",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
+      "datasource": "Prometheus",
       "targets": [
         {
           "expr": "min(min_over_time(wifi_probe_up{job=\"wifi-probe\"}[5m]))",
@@ -104,10 +95,7 @@
       "id": 4,
       "type": "stat",
       "title": "WAN Reachable (5m min)",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
+      "datasource": "Prometheus",
       "targets": [
         {
           "expr": "min_over_time(wan_reachable{job=\"gateway-monitor\"}[5m])",
@@ -131,10 +119,7 @@
       "id": 5,
       "type": "stat",
       "title": "LAN Failures (24h)",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
+      "datasource": "Prometheus",
       "targets": [
         {
           "expr": "increase(failure_domain_events_total{job=\"gateway-monitor\",domain=\"lan\"}[24h])",
@@ -159,13 +144,10 @@
       "id": 6,
       "type": "stat",
       "title": "Loss Bursts (1h)",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
+      "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "sum(increase(packet_loss_burst_total{job=\"jitter-probe\"}[1h]))",
+          "expr": "scalar(sum(increase(packet_loss_burst_total{job=\"jitter-probe\"}[1h])) or vector(0))",
           "refId": "A"
         }
       ],
@@ -187,13 +169,10 @@
       "id": 7,
       "type": "stat",
       "title": "DNS Timeouts (1h)",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
+      "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "sum(increase(dns_probe_timeouts_total{job=\"dns-probe\"}[1h]))",
+          "expr": "scalar(sum(increase(dns_probe_timeouts_total{job=\"dns-probe\"}[1h])) or vector(0))",
           "refId": "A"
         }
       ],
@@ -215,10 +194,7 @@
       "id": 8,
       "type": "timeseries",
       "title": "Network Jitter (ms)",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
+      "datasource": "Prometheus",
       "targets": [
         {
           "expr": "network_jitter_ms{job=\"jitter-probe\"}",
@@ -248,10 +224,7 @@
       "id": 9,
       "type": "timeseries",
       "title": "Tail Latency (ms)",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
+      "datasource": "Prometheus",
       "targets": [
         {
           "expr": "latency_p95{job=\"jitter-probe\"}",
@@ -286,10 +259,7 @@
       "id": 10,
       "type": "timeseries",
       "title": "WiFi Probe Latency (seconds)",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
+      "datasource": "Prometheus",
       "targets": [
         {
           "expr": "wifi_probe_latency_seconds{job=\"wifi-probe\"}",
@@ -319,10 +289,7 @@
       "id": 11,
       "type": "timeseries",
       "title": "DNS Latency (seconds)",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
+      "datasource": "Prometheus",
       "targets": [
         {
           "expr": "dns_probe_latency_seconds{job=\"dns-probe\"}",
@@ -352,10 +319,7 @@
       "id": 12,
       "type": "timeseries",
       "title": "Packet Loss and Bursts (15m)",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
+      "datasource": "Prometheus",
       "targets": [
         {
           "expr": "increase(packet_loss_total{job=\"jitter-probe\"}[15m])",
@@ -389,10 +353,7 @@
       "id": 13,
       "type": "timeseries",
       "title": "Failure Domain Events (1h)",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
+      "datasource": "Prometheus",
       "targets": [
         {
           "expr": "increase(failure_domain_events_total{job=\"gateway-monitor\"}[1h])",
@@ -421,10 +382,7 @@
       "id": 14,
       "type": "timeseries",
       "title": "WiFi Probe Errors (1h)",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
+      "datasource": "Prometheus",
       "targets": [
         {
           "expr": "increase(wifi_probe_errors_total{job=\"wifi-probe\"}[1h])",
@@ -453,10 +411,7 @@
       "id": 15,
       "type": "timeseries",
       "title": "WAN and Gateway Reachability",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
+      "datasource": "Prometheus",
       "targets": [
         {
           "expr": "gateway_reachable{job=\"gateway-monitor\"}",
