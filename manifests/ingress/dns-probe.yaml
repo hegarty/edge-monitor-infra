@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dns-probe-ingress
+  namespace: dns-probe
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: dns-probe-dns-probe-strip@kubernetescrd
+spec:
+  ingressClassName: traefik
+  rules:
+    - http:
+        paths:
+          - path: /dns-probe
+            pathType: Prefix
+            backend:
+              service:
+                name: dns-probe
+                port:
+                  number: 9091

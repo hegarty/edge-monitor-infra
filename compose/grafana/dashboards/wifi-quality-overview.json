@@ -1,0 +1,587 @@
+{
+  "id": null,
+  "uid": "wifi-quality-overview",
+  "title": "WiFi Quality Overview",
+  "description": "Portable overview of WiFi reliability, stability, loss, and user experience signals. Includes host/link indicators for congestion diagnosis; true RF telemetry requires an additional wireless exporter.",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 2,
+  "refresh": "5s",
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "WiFi Quality Score (15m sustained)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "100 - 45 * (1 - scalar(max(avg_over_time(gateway_reachable{job=\"gateway-monitor\"}[15m])) or vector(0))) - 20 * (1 - scalar(avg(avg_over_time(wifi_probe_up{job=\"wifi-probe\"}[15m])) or vector(0))) - 0.35 * scalar(avg(avg_over_time(network_jitter_ms{job=\"jitter-probe\"}[15m])) or vector(0)) - 0.02 * scalar(avg(avg_over_time(latency_p99{job=\"jitter-probe\"}[15m])) or vector(0)) - 10 * scalar(sum(increase(packet_loss_burst_total{job=\"jitter-probe\"}[15m])) or vector(0))",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 75 },
+              { "color": "green", "value": 90 }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        }
+      },
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Gateway Reachable (5m min)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "min_over_time(gateway_reachable{job=\"gateway-monitor\"}[5m])",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 6, "w": 3, "x": 6, "y": 0 }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "WiFi Probe Up (5m min)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "min(min_over_time(wifi_probe_up{job=\"wifi-probe\"}[5m]))",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 6, "w": 3, "x": 9, "y": 0 }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "WAN Reachable (5m min)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "min_over_time(wan_reachable{job=\"gateway-monitor\"}[5m])",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 6, "w": 3, "x": 12, "y": 0 }
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "LAN Failures (24h)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "increase(failure_domain_events_total{job=\"gateway-monitor\",domain=\"lan\"}[24h])",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 3 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 6, "w": 3, "x": 15, "y": 0 }
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Loss Bursts (1h)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "scalar(sum(increase(packet_loss_burst_total{job=\"jitter-probe\"}[1h])) or vector(0))",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 3 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 6, "w": 3, "x": 18, "y": 0 }
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "DNS Timeouts (1h)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "scalar(sum(increase(dns_probe_timeouts_total{job=\"dns-probe\"}[1h])) or vector(0))",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 5 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 6, "w": 3, "x": 21, "y": 0 }
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "Network Jitter (ms)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "network_jitter_ms{job=\"jitter-probe\"}",
+          "legendFormat": "{{target}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 5 },
+              { "color": "red", "value": 15 }
+            ]
+          },
+          "custom": {
+            "alertThreshold": true
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 }
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "Tail Latency (ms)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "latency_p95{job=\"jitter-probe\"}",
+          "legendFormat": "p95 {{target}}",
+          "refId": "A"
+        },
+        {
+          "expr": "latency_p99{job=\"jitter-probe\"}",
+          "legendFormat": "p99 {{target}}",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 100 },
+              { "color": "red", "value": 200 }
+            ]
+          },
+          "custom": {
+            "alertThreshold": true
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 }
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "WiFi Probe Latency (seconds)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "wifi_probe_latency_seconds{job=\"wifi-probe\"}",
+          "legendFormat": "{{probe}} {{target}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.05 },
+              { "color": "red", "value": 0.15 }
+            ]
+          },
+          "custom": {
+            "alertThreshold": true
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 }
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "DNS Latency (seconds)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "dns_probe_latency_seconds{job=\"dns-probe\"}",
+          "legendFormat": "{{target}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.05 },
+              { "color": "red", "value": 0.15 }
+            ]
+          },
+          "custom": {
+            "alertThreshold": true
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 14 }
+    },
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "Packet Loss and Bursts (15m)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "increase(packet_loss_total{job=\"jitter-probe\"}[15m])",
+          "legendFormat": "loss {{target}}",
+          "refId": "A"
+        },
+        {
+          "expr": "increase(packet_loss_burst_total{job=\"jitter-probe\"}[15m])",
+          "legendFormat": "bursts {{target}}",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 3 }
+            ]
+          },
+          "custom": {
+            "alertThreshold": true
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 22 }
+    },
+    {
+      "id": 13,
+      "type": "timeseries",
+      "title": "Failure Domain Events (1h)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "increase(failure_domain_events_total{job=\"gateway-monitor\"}[1h])",
+          "legendFormat": "{{domain}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 3 }
+            ]
+          },
+          "custom": {
+            "alertThreshold": true
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 22 }
+    },
+    {
+      "id": 14,
+      "type": "timeseries",
+      "title": "WiFi Probe Errors (1h)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "increase(wifi_probe_errors_total{job=\"wifi-probe\"}[1h])",
+          "legendFormat": "{{probe}} {{target}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 5 }
+            ]
+          },
+          "custom": {
+            "alertThreshold": true
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 30 }
+    },
+    {
+      "id": 15,
+      "type": "timeseries",
+      "title": "WAN and Gateway Reachability",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "gateway_reachable{job=\"gateway-monitor\"}",
+          "legendFormat": "gateway",
+          "refId": "A"
+        },
+        {
+          "expr": "wan_reachable{job=\"gateway-monitor\"}",
+          "legendFormat": "wan",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          },
+          "custom": {
+            "alertThreshold": true
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 30 }
+    },
+    {
+      "id": 16,
+      "type": "timeseries",
+      "title": "Host Carrier Changes (1h)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "increase(node_network_carrier_changes_total{job=\"node-exporter\",device=~\"eth0|wlan0|en0\"}[1h])",
+          "legendFormat": "{{device}}",
+          "refId": "A"
+        },
+        {
+          "expr": "increase(node_network_carrier_down_changes_total{job=\"node-exporter\",device=~\"eth0|wlan0|en0\"}[1h])",
+          "legendFormat": "down {{device}}",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 3 }
+            ]
+          },
+          "custom": {
+            "alertThreshold": true
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 38 }
+    },
+    {
+      "id": 17,
+      "type": "timeseries",
+      "title": "Host Link Errors and Drops (5m rate)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "rate(node_network_receive_errs_total{job=\"node-exporter\",device=~\"eth0|wlan0|en0\"}[5m])",
+          "legendFormat": "rx errs {{device}}",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(node_network_transmit_errs_total{job=\"node-exporter\",device=~\"eth0|wlan0|en0\"}[5m])",
+          "legendFormat": "tx errs {{device}}",
+          "refId": "B"
+        },
+        {
+          "expr": "rate(node_network_receive_drop_total{job=\"node-exporter\",device=~\"eth0|wlan0|en0\"}[5m])",
+          "legendFormat": "rx drops {{device}}",
+          "refId": "C"
+        },
+        {
+          "expr": "rate(node_network_transmit_drop_total{job=\"node-exporter\",device=~\"eth0|wlan0|en0\"}[5m])",
+          "legendFormat": "tx drops {{device}}",
+          "refId": "D"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.1 },
+              { "color": "red", "value": 1 }
+            ]
+          },
+          "custom": {
+            "alertThreshold": true
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 38 }
+    },
+    {
+      "id": 18,
+      "type": "timeseries",
+      "title": "TCP Retransmits and Softnet Pressure (5m)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "rate(node_netstat_Tcp_RetransSegs{job=\"node-exporter\"}[5m])",
+          "legendFormat": "tcp retransmits/s",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(rate(node_softnet_dropped_total{job=\"node-exporter\"}[5m]))",
+          "legendFormat": "softnet dropped/s",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(rate(node_softnet_times_squeezed_total{job=\"node-exporter\"}[5m]))",
+          "legendFormat": "softnet squeezed/s",
+          "refId": "C"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 5 }
+            ]
+          },
+          "custom": {
+            "alertThreshold": true
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 46 }
+    },
+    {
+      "id": 19,
+      "type": "timeseries",
+      "title": "Host Uplink Throughput (5m)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "rate(node_network_receive_bytes_total{job=\"node-exporter\",device=~\"eth0|wlan0|en0\"}[5m])",
+          "legendFormat": "rx {{device}}",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(node_network_transmit_bytes_total{job=\"node-exporter\",device=~\"eth0|wlan0|en0\"}[5m])",
+          "legendFormat": "tx {{device}}",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 46 }
+    }
+  ]
+}

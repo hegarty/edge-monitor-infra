@@ -1,26 +1,69 @@
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: hello-world-strip
+  namespace: hello-world
 spec:
-  stripPrefixRegex:
-    regex:
-      - ^/hello-world(/|$)
+  stripPrefix:
+    prefixes:
+      - /hello-world
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: kube-state-strip
+  namespace: kube-state-metrics
 spec:
   stripPrefix:
     prefixes:
       - /kube-state
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: node-exporter-strip
+  namespace: node-exporter
 spec:
   stripPrefix:
     prefixes:
       - /node-exporter
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: wifi-probe-strip
+  namespace: wifi-probe
+spec:
+  stripPrefix:
+    prefixes:
+      - /wifi-probe
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: dns-probe-strip
+  namespace: dns-probe
+spec:
+  stripPrefix:
+    prefixes:
+      - /dns-probe
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: jitter-probe-strip
+  namespace: jitter-probe
+spec:
+  stripPrefix:
+    prefixes:
+      - /jitter-probe
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: gateway-monitor-strip
+  namespace: gateway-monitor
+spec:
+  stripPrefix:
+    prefixes:
+      - /gateway-monitor

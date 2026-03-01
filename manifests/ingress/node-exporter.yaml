@@ -2,8 +2,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: node-exporter
+  namespace: node-exporter
   annotations:
-    traefik.ingress.kubernetes.io/router.middlewares: default-node-exporter-strip@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: node-exporter-node-exporter-strip@kubernetescrd
 spec:
   ingressClassName: traefik
   rules:
@@ -13,6 +14,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: node-exporter-prometheus-node-exporter
+                name: node-exporter
                 port:
                   number: 9100

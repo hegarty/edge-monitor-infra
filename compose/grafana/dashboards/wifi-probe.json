@@ -1,0 +1,188 @@
+{
+  "id": null,
+  "uid": "wifi-probe",
+  "title": "WiFi Probe",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 2,
+  "refresh": "5s",
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Probe Target Status",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "wifi_probe_up{job=\"wifi-probe\"}",
+          "legendFormat": "{{probe}} {{target}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 0 }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Service Up",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "up{job=\"wifi-probe\"}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 0 }
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Probe Latency (seconds)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "wifi_probe_latency_seconds{job=\"wifi-probe\"}",
+          "legendFormat": "{{probe}} {{target}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.05 },
+              { "color": "red", "value": 0.15 }
+            ]
+          },
+          "custom": {
+            "alertThreshold": true
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 6 }
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Probe Runs Total",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "wifi_probe_runs_total{job=\"wifi-probe\"}",
+          "legendFormat": "{{probe}} {{target}}",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 }
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Probe Errors Total",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "wifi_probe_errors_total{job=\"wifi-probe\"}",
+          "legendFormat": "{{probe}} {{target}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 5 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 14 }
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "CPU Usage (cores)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "rate(process_cpu_seconds_total{job=\"wifi-probe\"}[1m])",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 22 }
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "Memory Usage",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "process_resident_memory_bytes{job=\"wifi-probe\"}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 22 }
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "Goroutines",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "go_goroutines{job=\"wifi-probe\"}",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 22 }
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "Metrics Endpoint Request Rate",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(rate(promhttp_metric_handler_requests_total{job=\"wifi-probe\"}[1m])) by (code)",
+          "legendFormat": "HTTP {{code}}",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 30 }
+    }
+  ]
+}

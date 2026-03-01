@@ -7,7 +7,7 @@ scrape_configs:
     metrics_path: /node-exporter/metrics
     static_configs:
       - targets:
-          - host.docker.internal:80
+          - host.docker.internal:30080
         labels:
           app: node-exporter
           env: local
@@ -16,7 +16,7 @@ scrape_configs:
     metrics_path: /kube-state/metrics
     static_configs:
       - targets:
-          - host.docker.internal:80
+          - host.docker.internal:30080
         labels:
           app: kube-state-metrics
           env: local
@@ -25,7 +25,47 @@ scrape_configs:
     metrics_path: /hello-world/metrics
     static_configs:
       - targets:
-          - host.docker.internal:80
+          - host.docker.internal:30080
         labels:
           app: hello-world
+          env: local
+
+  - job_name: wifi-probe
+    scrape_interval: 5s
+    metrics_path: /wifi-probe/metrics
+    static_configs:
+      - targets:
+          - host.docker.internal:30080
+        labels:
+          app: wifi-probe
+          env: local
+
+  - job_name: dns-probe
+    scrape_interval: 5s
+    metrics_path: /dns-probe/metrics
+    static_configs:
+      - targets:
+          - host.docker.internal:30080
+        labels:
+          app: dns-probe
+          env: local
+
+  - job_name: jitter-probe
+    scrape_interval: 5s
+    metrics_path: /jitter-probe/metrics
+    static_configs:
+      - targets:
+          - host.docker.internal:30080
+        labels:
+          app: jitter-probe
+          env: local
+
+  - job_name: gateway-monitor
+    scrape_interval: 5s
+    metrics_path: /gateway-monitor/metrics
+    static_configs:
+      - targets:
+          - host.docker.internal:30080
+        labels:
+          app: gateway-monitor
           env: local
