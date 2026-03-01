@@ -69,3 +69,13 @@ scrape_configs:
         labels:
           app: gateway-monitor
           env: local
+
+  - job_name: alert-receiver
+    scrape_interval: 15s
+    metrics_path: /alert-receiver/metrics
+    static_configs:
+      - targets:
+          - host.docker.internal:30080
+        labels:
+          app: alert-receiver
+          env: local

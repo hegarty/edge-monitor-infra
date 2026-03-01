@@ -21,4 +21,9 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
+  name: alert-receiver
+---
+apiVersion: v1
+kind: Namespace
+metadata:
   name: hello-world

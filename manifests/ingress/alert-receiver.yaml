@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: alert-receiver-ingress
+  namespace: alert-receiver
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: alert-receiver-alert-receiver-strip@kubernetescrd
+spec:
+  ingressClassName: traefik
+  rules:
+    - http:
+        paths:
+          - path: /alert-receiver
+            pathType: Prefix
+            backend:
+              service:
+                name: alert-receiver
+                port:
+                  number: 9094
