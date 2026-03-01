@@ -1,0 +1,477 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: wifi-quality
+    folder: Edge Monitor
+    interval: 1m
+    rules:
+      - uid: wifi-gateway-down
+        title: Gateway unreachable
+        condition: B
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              editorMode: code
+              expr: min_over_time(gateway_reachable{job="gateway-monitor"}[5m])
+              hide: false
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            queryType: ""
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              hide: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: classic_conditions
+        dashboardUid: wifi-quality-overview
+        panelId: 2
+        noDataState: NoData
+        execErrState: Alerting
+        for: 2m
+        annotations:
+          summary: Gateway reachability fell below 1 for the last 5 minutes.
+        labels:
+          severity: critical
+          scope: lan
+
+      - uid: wifi-probe-drop
+        title: WiFi probe target unavailable
+        condition: B
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus
+            model:
+              editorMode: code
+              expr: min_over_time(wifi_probe_up{job="wifi-probe"}[5m])
+              hide: false
+              instant: true
+              intervalMs: 1000
+              legendFormat: "{{probe}} {{target}}"
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            queryType: ""
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              hide: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: classic_conditions
+        dashboardUid: wifi-quality-overview
+        panelId: 3
+        noDataState: NoData
+        execErrState: Alerting
+        for: 2m
+        annotations:
+          summary: One or more WiFi probe targets stayed down for 5 minutes.
+        labels:
+          severity: warning
+          scope: wifi-probe
+
+      - uid: wifi-lan-failures
+        title: LAN instability detected
+        condition: B
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 900
+              to: 0
+            datasourceUid: prometheus
+            model:
+              editorMode: code
+              expr: increase(failure_domain_events_total{job="gateway-monitor",domain="lan"}[15m])
+              hide: false
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            queryType: ""
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              hide: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: classic_conditions
+        dashboardUid: wifi-quality-overview
+        panelId: 13
+        noDataState: NoData
+        execErrState: Alerting
+        for: 0s
+        annotations:
+          summary: failure_domain_events_total for domain=lan increased in the last 15 minutes.
+        labels:
+          severity: warning
+          scope: lan
+
+      - uid: wifi-high-jitter
+        title: Sustained WiFi jitter
+        condition: B
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              editorMode: code
+              expr: avg_over_time(network_jitter_ms{job="jitter-probe"}[10m])
+              hide: false
+              instant: true
+              intervalMs: 1000
+              legendFormat: "{{target}}"
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            queryType: ""
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 15
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              hide: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: classic_conditions
+        dashboardUid: wifi-quality-overview
+        panelId: 8
+        noDataState: NoData
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: Average network_jitter_ms stayed above 15 ms for 10 minutes.
+        labels:
+          severity: warning
+          scope: jitter
+
+      - uid: wifi-tail-latency
+        title: High tail latency
+        condition: B
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              editorMode: code
+              expr: avg_over_time(latency_p99{job="jitter-probe"}[10m])
+              hide: false
+              instant: true
+              intervalMs: 1000
+              legendFormat: "{{target}}"
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            queryType: ""
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 200
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              hide: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: classic_conditions
+        dashboardUid: wifi-quality-overview
+        panelId: 9
+        noDataState: NoData
+        execErrState: Alerting
+        for: 5m
+        annotations:
+          summary: Average latency_p99 stayed above 200 ms for 10 minutes.
+        labels:
+          severity: warning
+          scope: latency
+
+      - uid: wifi-loss-bursts
+        title: Packet loss bursts detected
+        condition: B
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 900
+              to: 0
+            datasourceUid: prometheus
+            model:
+              editorMode: code
+              expr: increase(packet_loss_burst_total{job="jitter-probe"}[15m])
+              hide: false
+              instant: true
+              intervalMs: 1000
+              legendFormat: "{{target}}"
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            queryType: ""
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              hide: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: classic_conditions
+        dashboardUid: wifi-quality-overview
+        panelId: 12
+        noDataState: NoData
+        execErrState: Alerting
+        for: 0s
+        annotations:
+          summary: packet_loss_burst_total increased in the last 15 minutes.
+        labels:
+          severity: critical
+          scope: loss
+
+      - uid: wifi-dns-timeouts
+        title: DNS timeouts detected
+        condition: B
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 900
+              to: 0
+            datasourceUid: prometheus
+            model:
+              editorMode: code
+              expr: increase(dns_probe_timeouts_total{job="dns-probe"}[15m])
+              hide: false
+              instant: true
+              intervalMs: 1000
+              legendFormat: "{{target}}"
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            queryType: ""
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              hide: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: classic_conditions
+        dashboardUid: wifi-quality-overview
+        panelId: 11
+        noDataState: NoData
+        execErrState: Alerting
+        for: 0s
+        annotations:
+          summary: dns_probe_timeouts_total increased in the last 15 minutes.
+        labels:
+          severity: warning
+          scope: dns
+
+      - uid: wifi-probe-errors
+        title: WiFi probe errors detected
+        condition: B
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 900
+              to: 0
+            datasourceUid: prometheus
+            model:
+              editorMode: code
+              expr: increase(wifi_probe_errors_total{job="wifi-probe"}[15m])
+              hide: false
+              instant: true
+              intervalMs: 1000
+              legendFormat: "{{probe}} {{target}}"
+              maxDataPoints: 43200
+              refId: A
+          - refId: B
+            queryType: ""
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              hide: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: B
+              type: classic_conditions
+        dashboardUid: wifi-quality-overview
+        panelId: 14
+        noDataState: NoData
+        execErrState: Alerting
+        for: 0s
+        annotations:
+          summary: wifi_probe_errors_total increased in the last 15 minutes.
+        labels:
+          severity: warning
+          scope: wifi-probe

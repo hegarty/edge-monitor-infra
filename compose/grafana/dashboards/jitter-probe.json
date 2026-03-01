@@ -4,13 +4,17 @@
   "title": "Jitter Probe",
   "timezone": "browser",
   "schemaVersion": 39,
-  "version": 1,
+  "version": 2,
   "refresh": "5s",
   "panels": [
     {
+      "id": 1,
       "type": "stat",
       "title": "Probe Up",
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "targets": [
         {
           "expr": "up{job=\"jitter-probe\"}",
@@ -28,12 +32,16 @@
           }
         }
       },
-      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 0 }
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 }
     },
     {
+      "id": 2,
       "type": "stat",
       "title": "Packet Loss Total",
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "targets": [
         {
           "expr": "sum(packet_loss_total{job=\"jitter-probe\"})",
@@ -52,24 +60,60 @@
           }
         }
       },
-      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 0 }
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 0 }
     },
     {
+      "id": 3,
+      "type": "stat",
+      "title": "Packet Loss Bursts Total",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "sum(packet_loss_burst_total{job=\"jitter-probe\"})",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 3 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 0 }
+    },
+    {
+      "id": 4,
       "type": "stat",
       "title": "Targets Monitored",
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "targets": [
         {
           "expr": "count(network_latency_ms{job=\"jitter-probe\"})",
           "refId": "A"
         }
       ],
-      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 0 }
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 0 }
     },
     {
+      "id": 5,
       "type": "timeseries",
       "title": "Network Latency (ms)",
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "targets": [
         {
           "expr": "network_latency_ms{job=\"jitter-probe\"}",
@@ -79,15 +123,30 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "ms"
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 50 },
+              { "color": "red", "value": 100 }
+            ]
+          },
+          "custom": {
+            "alertThreshold": true
+          }
         }
       },
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 }
     },
     {
+      "id": 6,
       "type": "timeseries",
       "title": "Network Jitter (ms)",
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "targets": [
         {
           "expr": "network_jitter_ms{job=\"jitter-probe\"}",
@@ -97,15 +156,30 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "ms"
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 5 },
+              { "color": "red", "value": 15 }
+            ]
+          },
+          "custom": {
+            "alertThreshold": true
+          }
         }
       },
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 }
     },
     {
+      "id": 7,
       "type": "timeseries",
       "title": "Latency Percentiles (ms)",
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "targets": [
         {
           "expr": "latency_p95{job=\"jitter-probe\"}",
@@ -120,27 +194,83 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "ms"
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 100 },
+              { "color": "red", "value": 200 }
+            ]
+          },
+          "custom": {
+            "alertThreshold": true
+          }
         }
       },
       "gridPos": { "h": 8, "w": 24, "x": 0, "y": 14 }
     },
     {
+      "id": 8,
+      "type": "timeseries",
+      "title": "Packet Loss Events (15m)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "increase(packet_loss_total{job=\"jitter-probe\"}[15m])",
+          "legendFormat": "{{target}}",
+          "refId": "A"
+        },
+        {
+          "expr": "increase(packet_loss_burst_total{job=\"jitter-probe\"}[15m])",
+          "legendFormat": "bursts {{target}}",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 3 }
+            ]
+          },
+          "custom": {
+            "alertThreshold": true
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 22 }
+    },
+    {
+      "id": 9,
       "type": "timeseries",
       "title": "CPU Usage (cores)",
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "targets": [
         {
           "expr": "rate(process_cpu_seconds_total{job=\"jitter-probe\"}[1m])",
           "refId": "A"
         }
       ],
-      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 22 }
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 30 }
     },
     {
+      "id": 10,
       "type": "timeseries",
       "title": "Memory Usage",
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "targets": [
         {
           "expr": "process_resident_memory_bytes{job=\"jitter-probe\"}",
@@ -152,24 +282,32 @@
           "unit": "bytes"
         }
       },
-      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 22 }
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 30 }
     },
     {
+      "id": 11,
       "type": "timeseries",
       "title": "Goroutines",
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "targets": [
         {
           "expr": "go_goroutines{job=\"jitter-probe\"}",
           "refId": "A"
         }
       ],
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 22 }
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 30 }
     },
     {
+      "id": 12,
       "type": "timeseries",
       "title": "Metrics Endpoint Request Rate",
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "targets": [
         {
           "expr": "sum(rate(promhttp_metric_handler_requests_total{job=\"jitter-probe\"}[1m])) by (code)",
@@ -177,7 +315,7 @@
           "refId": "A"
         }
       ],
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 30 }
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 38 }
     }
   ]
 }

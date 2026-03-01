@@ -4,13 +4,17 @@
   "title": "DNS Probe",
   "timezone": "browser",
   "schemaVersion": 39,
-  "version": 1,
+  "version": 2,
   "refresh": "5s",
   "panels": [
     {
+      "id": 1,
       "type": "stat",
       "title": "DNS Target Status",
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "targets": [
         {
           "expr": "dns_probe_up{job=\"dns-probe\"}",
@@ -32,9 +36,41 @@
       "gridPos": { "h": 6, "w": 12, "x": 0, "y": 0 }
     },
     {
+      "id": 2,
+      "type": "stat",
+      "title": "DNS Timeouts (1h)",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(dns_probe_timeouts_total{job=\"dns-probe\"}[1h]))",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 5 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 0 }
+    },
+    {
+      "id": 3,
       "type": "timeseries",
       "title": "DNS Latency (Seconds)",
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "targets": [
         {
           "expr": "dns_probe_latency_seconds{job=\"dns-probe\"}",
@@ -44,15 +80,59 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "s"
+          "unit": "s",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.05 },
+              { "color": "red", "value": 0.15 }
+            ]
+          },
+          "custom": {
+            "alertThreshold": true
+          }
         }
       },
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 6 }
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 }
     },
     {
+      "id": 4,
+      "type": "timeseries",
+      "title": "DNS Timeouts Total",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "dns_probe_timeouts_total{job=\"dns-probe\"}",
+          "legendFormat": "{{target}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 5 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 }
+    },
+    {
+      "id": 5,
       "type": "timeseries",
       "title": "CPU Usage (cores)",
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "targets": [
         {
           "expr": "rate(process_cpu_seconds_total{job=\"dns-probe\"}[1m])",
@@ -62,9 +142,13 @@
       "gridPos": { "h": 8, "w": 8, "x": 0, "y": 14 }
     },
     {
+      "id": 6,
       "type": "timeseries",
       "title": "Memory Usage",
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "targets": [
         {
           "expr": "process_resident_memory_bytes{job=\"dns-probe\"}",
@@ -79,9 +163,13 @@
       "gridPos": { "h": 8, "w": 8, "x": 8, "y": 14 }
     },
     {
+      "id": 7,
       "type": "timeseries",
       "title": "Goroutines",
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "targets": [
         {
           "expr": "go_goroutines{job=\"dns-probe\"}",
@@ -91,9 +179,13 @@
       "gridPos": { "h": 8, "w": 8, "x": 16, "y": 14 }
     },
     {
+      "id": 8,
       "type": "timeseries",
       "title": "Metrics Endpoint Request Rate",
-      "datasource": "Prometheus",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "targets": [
         {
           "expr": "sum(rate(promhttp_metric_handler_requests_total{job=\"dns-probe\"}[1m])) by (code)",
