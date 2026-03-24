@@ -67,3 +67,13 @@ spec:
   stripPrefix:
     prefixes:
       - /gateway-monitor
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: alert-receiver-strip
+  namespace: alert-receiver
+spec:
+  stripPrefix:
+    prefixes:
+      - /alert-receiver
