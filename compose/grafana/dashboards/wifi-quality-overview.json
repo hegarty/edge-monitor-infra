@@ -122,7 +122,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "increase(failure_domain_events_total{job=\"gateway-monitor\",domain=\"lan\"}[24h])",
+          "expr": "scalar(sum(increase(failure_domain_events_total{job=\"gateway-monitor\",domain=\"lan\"}[24h])) or vector(0))",
           "refId": "A"
         }
       ],
