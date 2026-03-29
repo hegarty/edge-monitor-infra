@@ -5,9 +5,239 @@
   "description": "Portable overview of WiFi reliability, stability, loss, and user experience signals. Includes host/link indicators for congestion diagnosis; true RF telemetry requires an additional wireless exporter.",
   "timezone": "browser",
   "schemaVersion": 39,
-  "version": 2,
+  "version": 3,
   "refresh": "5s",
   "panels": [
+    {
+      "id": 20,
+      "type": "row",
+      "title": "SLO Status",
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 }
+    },
+    {
+      "id": 21,
+      "type": "stat",
+      "title": "Availability SLO — WAN Uptime (30d)",
+      "description": "Target: 99.998% — allows 60 seconds of downtime per month",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "avg_over_time(wan_reachable{job=\"gateway-monitor\"}[30d]) * 100",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 4,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 99.9 },
+              { "color": "green", "value": 99.998 }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background"
+      },
+      "gridPos": { "h": 6, "w": 4, "x": 0, "y": 1 }
+    },
+    {
+      "id": 22,
+      "type": "stat",
+      "title": "Error Budget Remaining (30d)",
+      "description": "Seconds of WAN downtime budget left this month. Budget = 60s total.",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "60 - (1 - avg_over_time(wan_reachable{job=\"gateway-monitor\"}[30d])) * 2592000",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 0 },
+              { "color": "green", "value": 30 }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background"
+      },
+      "gridPos": { "h": 6, "w": 4, "x": 4, "y": 1 }
+    },
+    {
+      "id": 23,
+      "type": "stat",
+      "title": "Latency SLO — p95 avg (15m)",
+      "description": "Target: p95 < 100ms over a 15-minute window",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "avg_over_time(latency_p95{job=\"jitter-probe\"}[15m])",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 80 },
+              { "color": "red", "value": 100 }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background"
+      },
+      "gridPos": { "h": 6, "w": 4, "x": 8, "y": 1 }
+    },
+    {
+      "id": 24,
+      "type": "stat",
+      "title": "Stability SLO — p99",
+      "description": "Target: p99 < 250ms. Above 500ms triggers composite SLO breach.",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "latency_p99{job=\"jitter-probe\"}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 250 },
+              { "color": "red", "value": 500 }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background"
+      },
+      "gridPos": { "h": 6, "w": 4, "x": 12, "y": 1 }
+    },
+    {
+      "id": 25,
+      "type": "stat",
+      "title": "Packet Loss SLO (15m)",
+      "description": "Target: < 1% loss per 15-minute window. Assumes 500ms probe interval.",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "rate(packet_loss_total{job=\"jitter-probe\"}[15m]) * 50",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 2 }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background"
+      },
+      "gridPos": { "h": 6, "w": 4, "x": 16, "y": 1 }
+    },
+    {
+      "id": 26,
+      "type": "stat",
+      "title": "Composite SLO",
+      "description": "BAD if any of: WAN unreachable, p99 > 500ms, packet loss > 2%",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "clamp_max((1 - scalar(min(min_over_time(wan_reachable{job=\"gateway-monitor\"}[5m])))) + scalar(max(latency_p99{job=\"jitter-probe\"}) > bool 500) + scalar(max(rate(packet_loss_total{job=\"jitter-probe\"}[15m]) * 50) > bool 2), 1)",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": { "text": "GOOD", "color": "green", "index": 0 },
+                "1": { "text": "BAD", "color": "red", "index": 1 }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "background",
+        "textMode": "value"
+      },
+      "gridPos": { "h": 6, "w": 4, "x": 20, "y": 1 }
+    },
     {
       "id": 1,
       "type": "stat",
@@ -41,7 +271,7 @@
           "values": false
         }
       },
-      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 }
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 7 }
     },
     {
       "id": 2,
@@ -65,7 +295,7 @@
           }
         }
       },
-      "gridPos": { "h": 6, "w": 3, "x": 6, "y": 0 }
+      "gridPos": { "h": 6, "w": 3, "x": 6, "y": 7 }
     },
     {
       "id": 3,
@@ -89,7 +319,7 @@
           }
         }
       },
-      "gridPos": { "h": 6, "w": 3, "x": 9, "y": 0 }
+      "gridPos": { "h": 6, "w": 3, "x": 9, "y": 7 }
     },
     {
       "id": 4,
@@ -113,7 +343,7 @@
           }
         }
       },
-      "gridPos": { "h": 6, "w": 3, "x": 12, "y": 0 }
+      "gridPos": { "h": 6, "w": 3, "x": 12, "y": 7 }
     },
     {
       "id": 5,
@@ -138,7 +368,7 @@
           }
         }
       },
-      "gridPos": { "h": 6, "w": 3, "x": 15, "y": 0 }
+      "gridPos": { "h": 6, "w": 3, "x": 15, "y": 7 }
     },
     {
       "id": 6,
@@ -163,7 +393,7 @@
           }
         }
       },
-      "gridPos": { "h": 6, "w": 3, "x": 18, "y": 0 }
+      "gridPos": { "h": 6, "w": 3, "x": 18, "y": 7 }
     },
     {
       "id": 7,
@@ -188,7 +418,7 @@
           }
         }
       },
-      "gridPos": { "h": 6, "w": 3, "x": 21, "y": 0 }
+      "gridPos": { "h": 6, "w": 3, "x": 21, "y": 7 }
     },
     {
       "id": 8,
@@ -218,7 +448,7 @@
           }
         }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 }
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 13 }
     },
     {
       "id": 9,
@@ -253,7 +483,7 @@
           }
         }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 }
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 13 }
     },
     {
       "id": 10,
@@ -283,7 +513,7 @@
           }
         }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 }
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 21 }
     },
     {
       "id": 11,
@@ -313,7 +543,7 @@
           }
         }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 14 }
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 21 }
     },
     {
       "id": 12,
@@ -347,7 +577,7 @@
           }
         }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 22 }
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 29 }
     },
     {
       "id": 13,
@@ -376,7 +606,7 @@
           }
         }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 22 }
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 29 }
     },
     {
       "id": 14,
@@ -405,7 +635,7 @@
           }
         }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 30 }
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 37 }
     },
     {
       "id": 15,
@@ -440,7 +670,7 @@
           }
         }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 30 }
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 37 }
     },
     {
       "id": 16,
@@ -474,7 +704,7 @@
           }
         }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 38 }
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 45 }
     },
     {
       "id": 17,
@@ -518,7 +748,7 @@
           }
         }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 38 }
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 45 }
     },
     {
       "id": 18,
@@ -557,7 +787,7 @@
           }
         }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 46 }
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 53 }
     },
     {
       "id": 19,
@@ -581,7 +811,7 @@
           "unit": "Bps"
         }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 46 }
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 53 }
     }
   ]
 }
